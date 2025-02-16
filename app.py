@@ -19,5 +19,19 @@ def add_todo():
     todos.append({'title': data['title'], 'done': False})
     return jsonify({'message': 'Todo added'}), 201
 
+@app.route('/todos/<int:todo_id>', methods=['PUT'])
+def update_todo(todo_id):
+    """更新指定TODO项（关键点：参数校验与错误处理）"""
+    if todo_id >= len(todos) or todo_id < 0:
+        abort(404, description="Todo项不存在")  # 自动返回404状态码
+    
+    data = request.get_json()
+    if 'title' not in data or 'done' not in data:
+        abort(400, description="请求参数不完整")
+    
+    todos[todo_id] = {'title': data['title'], 'done': data['done']}
+    return jsonify({'message': 'Todo更新成功'}), 200
+
+
 if __name__ == '__main__':
     app.run(debug=True)  # 调试模式运行（生产环境需关闭！）
